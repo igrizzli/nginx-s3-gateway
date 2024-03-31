@@ -32,7 +32,6 @@ import awssig2 from "./awssig2.js";
 import awssig4 from "./awssig4.js";
 import utils from "./utils.js";
 
-_requireEnvVars('S3_BUCKET_NAME');
 _requireEnvVars('S3_SERVER');
 _requireEnvVars('S3_SERVER_PROTO');
 _requireEnvVars('S3_SERVER_PORT');
@@ -163,7 +162,7 @@ function s3date(r) {
  * @returns {string} AWS authentication signature
  */
 function s3auth(r) {
-    const bucket = process.env['S3_BUCKET_NAME'];
+    const bucket = _bucketName(r);
     const region = process.env['S3_REGION'];
     let server;
     if (S3_STYLE === 'path') {
@@ -186,6 +185,10 @@ function s3auth(r) {
     }
 
     return signature;
+}
+
+function _bucketName(r) {
+    return r.variables.bucketName;
 }
 
 /**
@@ -261,7 +264,7 @@ function _s3ReqParamsForSigV4(r, bucket, server) {
  * @returns {string} start of the file path for the S3 object URI
  */
 function s3BaseUri(r) {
-    const bucket = process.env['S3_BUCKET_NAME'];
+    const bucket = _bucketName(r);
     let basePath;
 
     if (S3_STYLE === 'path') {
